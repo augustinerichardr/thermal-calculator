@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thermal Expansion & Stress Suite</title>
+  <title>Thermal Expansion & Stress Suite Pro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
       --bg: #0f172a;
@@ -13,71 +14,40 @@
       --text: #f8fafc;
       --subtext: #94a3b8;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px; background: var(--bg); color: var(--text); max-width: 768px; margin: 0 auto; }
-    h2 { margin-top: 0; color: #fff; text-align: center; font-size: 1.5rem; }
-    .card { background: var(--card-bg); padding: 18px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-    label { display: block; margin-top: 10px; font-weight: 600; color: var(--subtext); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    input, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: #fff; box-sizing: border-box; font-size: 1rem; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    canvas { width: 100%; height: 160px; background: #020617; border-radius: 8px; margin-top: 10px; border: 1px solid var(--border); display: block; }
-    .ai-badge { display: inline-block; background: #2563eb; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-    .output-val { font-size: 1.1rem; font-weight: bold; color: var(--accent); }
-    .custom-section, .shape-inputs { display: none; margin-top: 10px; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 8px; border: 1px dashed var(--border); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 12px; background: var(--bg); color: var(--text); max-width: 800px; margin: 0 auto; font-size: 0.9rem; }
+    h2 { margin-top: 0; color: #fff; text-align: center; font-size: 1.3rem; margin-bottom: 12px; }
+    .card { background: var(--card-bg); padding: 14px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .card-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+    label { display: block; margin-top: 8px; font-weight: 600; color: var(--subtext); font-size: 0.75rem; text-transform: uppercase; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: #fff; box-sizing: border-box; font-size: 0.85rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    canvas { width: 100%; height: 180px; background: #020617; border-radius: 8px; margin-top: 8px; border: 1px solid var(--border); display: block; }
+    .ai-badge { display: inline-block; background: #2563eb; color: white; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; }
+    .output-val { font-size: 1rem; font-weight: bold; color: var(--accent); margin-top: 2px; }
+    .shape-inputs { display: none; margin-top: 8px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 6px; border: 1px dashed var(--border); }
+    .btn-pdf { width: 100%; padding: 10px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 10px; }
+    .btn-pdf:hover { background: #0369a1; }
   </style>
 </head>
 <body>
 
   <h2>Thermal Expansion & Stress Suite</h2>
 
-  <!-- Material Selection -->
+  <!-- Material Selection with Search -->
   <div class="card">
-    <div class="card-title">1. Material Selection</div>
-    <label for="material">Preset Alloys & Plastics</label>
-    <select id="material" onchange="handleMaterialChange()">
-      <optgroup label="Steels & Iron">
-        <option value="steel_a36">Structural Steel (A36)</option>
-        <option value="ss_316">Stainless Steel 316L</option>
-      </optgroup>
-      <optgroup label="Non-Ferrous & Light Alloys">
-        <option value="alu_6061">Aluminum 6061-T6</option>
-        <option value="copper">Copper (C11000)</option>
-        <option value="titanium_g5">Titanium Grade 5 (Ti-6Al-4V)</option>
-      </optgroup>
-      <optgroup label="Nickel & Special Alloys">
-        <option value="monel_400">Monel 400</option>
-        <option value="inconel_718">Inconel 718</option>
-      </optgroup>
-      <optgroup label="Polymers / Plastics">
-        <option value="ptfe">PTFE (Teflon)</option>
-        <option value="pvc">PVC / Rigid Plastic</option>
-      </optgroup>
-      <option value="custom">★ Custom Material (User Defined)...</option>
-    </select>
+    <div class="card-title">1. Material Library</div>
+    <label for="matSearch">Search Material</label>
+    <input type="text" id="matSearch" placeholder="Type to search (e.g. Brass, Tool Steel, Nylon)..." oninput="filterMaterials()">
 
-    <!-- Custom Material Fields -->
-    <div id="customSection" class="custom-section">
-      <label for="c_name">Custom Name</label>
-      <input type="text" id="c_name" value="Custom Alloy" oninput="calculate()">
-      <div class="grid-2">
-        <div>
-          <label for="c_alpha">CTE α (×10⁻⁶ /°C)</label>
-          <input type="number" id="c_alpha" value="15.0" step="0.1" oninput="calculate()">
-        </div>
-        <div>
-          <label for="c_E">Modulus E (GPa)</label>
-          <input type="number" id="c_E" value="200" step="1" oninput="calculate()">
-        </div>
-      </div>
-      <label for="c_yield">Yield Strength σy (MPa)</label>
-      <input type="number" id="c_yield" value="250" step="5" oninput="calculate()">
-    </div>
+    <label for="material">Select Material</label>
+    <select id="material" size="5" onchange="handleMaterialChange()">
+      <!-- Populated via JavaScript -->
+    </select>
   </div>
 
-  <!-- Geometric & Thermal Parameters -->
+  <!-- Geometry & Form Factor -->
   <div class="card">
     <div class="card-title">2. Geometry & Temperature</div>
-    
     <div class="grid-2">
       <div>
         <label for="length">Length L₀ (mm)</label>
@@ -89,15 +59,16 @@
       </div>
     </div>
 
-    <label for="shape">Cross-Sectional Profile</label>
+    <label for="shape">Profile / Section Form Factor</label>
     <select id="shape" onchange="handleShapeChange()">
       <option value="solid_round">Solid Round Bar</option>
       <option value="hollow_tube">Hollow Pipe / Tube</option>
       <option value="rectangular">Rectangular Bar</option>
-      <option value="i_beam">I-Beam Profile</option>
+      <option value="flat_sheet">Flat Sheet / Plate</option>
+      <option value="l_angle">L-Angle Section</option>
     </select>
 
-    <!-- Shape Inputs -->
+    <!-- Shape Dimension Inputs -->
     <div id="shape_solid_round" class="shape-inputs" style="display:block;">
       <label for="sr_dia">Diameter (mm)</label>
       <input type="number" id="sr_dia" value="50" oninput="calculate()">
@@ -105,39 +76,36 @@
 
     <div id="shape_hollow_tube" class="shape-inputs">
       <div class="grid-2">
-        <div>
-          <label for="ht_od">Outer Dia (mm)</label>
-          <input type="number" id="ht_od" value="60" oninput="calculate()">
-        </div>
-        <div>
-          <label for="ht_id">Inner Dia (mm)</label>
-          <input type="number" id="ht_id" value="50" oninput="calculate()">
-        </div>
+        <div><label for="ht_od">Outer Dia (mm)</label><input type="number" id="ht_od" value="60" oninput="calculate()"></div>
+        <div><label for="ht_id">Inner Dia (mm)</label><input type="number" id="ht_id" value="50" oninput="calculate()"></div>
       </div>
     </div>
 
     <div id="shape_rectangular" class="shape-inputs">
       <div class="grid-2">
-        <div>
-          <label for="rec_w">Width (mm)</label>
-          <input type="number" id="rec_w" value="40" oninput="calculate()">
-        </div>
-        <div>
-          <label for="rec_h">Height (mm)</label>
-          <input type="number" id="rec_h" value="40" oninput="calculate()">
-        </div>
+        <div><label for="rec_w">Width (mm)</label><input type="number" id="rec_w" value="40" oninput="calculate()"></div>
+        <div><label for="rec_h">Height (mm)</label><input type="number" id="rec_h" value="40" oninput="calculate()"></div>
       </div>
     </div>
 
-    <div id="shape_i_beam" class="shape-inputs">
-      <label for="ib_area">Cross-Sectional Area (mm²)</label>
-      <input type="number" id="ib_area" value="1200" oninput="calculate()">
+    <div id="shape_flat_sheet" class="shape-inputs">
+      <div class="grid-2">
+        <div><label for="fs_w">Sheet Width (mm)</label><input type="number" id="fs_w" value="300" oninput="calculate()"></div>
+        <div><label for="fs_t">Thickness (mm)</label><input type="number" id="fs_t" value="5" oninput="calculate()"></div>
+      </div>
+    </div>
+
+    <div id="shape_l_angle" class="shape-inputs">
+      <div class="grid-2">
+        <div><label for="la_w">Leg Width (mm)</label><input type="number" id="la_w" value="50" oninput="calculate()"></div>
+        <div><label for="la_t">Leg Thickness (mm)</label><input type="number" id="la_t" value="5" oninput="calculate()"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Visual Canvas -->
+  <!-- Bending & Heat Canvas Visualization -->
   <div class="card">
-    <div class="card-title">3. Visual Expansion Scale (CAD Schematic)</div>
+    <div class="card-title">3. Stress & Bending Visualization</div>
     <canvas id="canvas"></canvas>
   </div>
 
@@ -148,161 +116,135 @@
       <div>Elongation (ΔL): <div id="deltaL" class="output-val">0.00 mm</div></div>
       <div>Constrained Stress (σ): <div id="stress" class="output-val">0.00 MPa</div></div>
     </div>
-    <div class="grid-2" style="margin-top: 10px;">
+    <div class="grid-2" style="margin-top: 8px;">
       <div>Section Area (A): <div id="areaOut" class="output-val">0.00 mm²</div></div>
       <div>Restraining Force (F): <div id="forceOut" class="output-val">0.00 kN</div></div>
     </div>
   </div>
 
-  <!-- AI Engineering Assessment -->
+  <!-- AI Engineering Analysis & PDF Export -->
   <div class="card">
-    <span class="ai-badge">AI Safety & Design Insight</span>
-    <div id="aiInsight" style="color: #cbd5e1; line-height: 1.5; font-size: 0.95rem;">Analyzing parameters...</div>
+    <span class="ai-badge">AI Safety & Design Use Case</span>
+    <div id="aiInsight" style="color: #cbd5e1; line-height: 1.4; font-size: 0.85rem;">Analyzing...</div>
+    <button class="btn-pdf" onclick="generatePDF()">📄 Export PDF Technical Report</button>
   </div>
 
   <script>
-    const materials = {
-      steel_a36: { name: 'A36 Structural Steel', alpha: 12.0e-6, E: 200, yield: 250 },
-      ss_316: { name: '316L Stainless Steel', alpha: 16.0e-6, E: 193, yield: 290 },
-      alu_6061: { name: '6061-T6 Aluminum', alpha: 23.0e-6, E: 68.9, yield: 276 },
-      copper: { name: 'Copper (C11000)', alpha: 16.5e-6, E: 117, yield: 200 },
-      titanium_g5: { name: 'Titanium Grade 5', alpha: 8.6e-6, E: 114, yield: 880 },
-      monel_400: { name: 'Monel 400 Alloy', alpha: 13.9e-6, E: 179, yield: 240 },
-      inconel_718: { name: 'Inconel 718 Superalloy', alpha: 13.0e-6, E: 200, yield: 1100 },
-      ptfe: { name: 'PTFE (Teflon)', alpha: 135.0e-6, E: 0.5, yield: 23 },
-      pvc: { name: 'PVC / Rigid Plastic', alpha: 70.0e-6, E: 3.0, yield: 50 }
-    };
+    const db = [
+      { id: 'steel_a36', name: 'Carbon Steel (A36)', alpha: 12.0e-6, E: 200, yield: 250 },
+      { id: 'steel_1045', name: 'Medium Carbon Steel (AISI 1045)', alpha: 11.5e-6, E: 205, yield: 310 },
+      { id: 'tool_d2', name: 'Tool Steel (D2)', alpha: 10.4e-6, E: 210, yield: 1500 },
+      { id: 'ss_304', name: 'Stainless Steel 304', alpha: 17.2e-6, E: 193, yield: 215 },
+      { id: 'ss_316', name: 'Stainless Steel 316L', alpha: 16.0e-6, E: 193, yield: 290 },
+      { id: 'brass_c360', name: 'Free-Cutting Brass (C360)', alpha: 20.5e-6, E: 97, yield: 310 },
+      { id: 'bronze_c932', name: 'Bearing Bronze (C932)', alpha: 18.0e-6, E: 100, yield: 140 },
+      { id: 'alu_6061', name: 'Aluminum 6061-T6', alpha: 23.0e-6, E: 68.9, yield: 276 },
+      { id: 'titanium_g5', name: 'Titanium Grade 5 (Ti-6Al-4V)', alpha: 8.6e-6, E: 114, yield: 880 },
+      { id: 'inconel_718', name: 'Inconel 718 Superalloy', alpha: 13.0e-6, E: 200, yield: 1100 },
+      { id: 'ptfe', name: 'PTFE (Teflon)', alpha: 135.0e-6, E: 0.5, yield: 23 },
+      { id: 'nylon_66', name: 'Nylon 6/6 Plastic', alpha: 80.0e-6, E: 2.8, yield: 80 }
+    ];
 
-    function handleMaterialChange() {
-      const selected = document.getElementById('material').value;
-      document.getElementById('customSection').style.display = (selected === 'custom') ? 'block' : 'none';
-      calculate();
+    function filterMaterials() {
+      const q = document.getElementById('matSearch').value.toLowerCase();
+      const select = document.getElementById('material');
+      select.innerHTML = '';
+      db.filter(m => m.name.toLowerCase().includes(q)).forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.innerText = `${m.name} [α: ${(m.alpha*1e6).toFixed(1)}e-6]`;
+        select.appendChild(opt);
+      });
+      if (select.options.length > 0) { select.selectedIndex = 0; handleMaterialChange(); }
     }
+
+    function handleMaterialChange() { calculate(); }
 
     function handleShapeChange() {
       const selected = document.getElementById('shape').value;
-      const shapes = ['solid_round', 'hollow_tube', 'rectangular', 'i_beam'];
-      shapes.forEach(s => {
+      ['solid_round', 'hollow_tube', 'rectangular', 'flat_sheet', 'l_angle'].forEach(s => {
         document.getElementById(`shape_${s}`).style.display = (s === selected) ? 'block' : 'none';
       });
       calculate();
     }
 
     function getArea() {
-      const shape = document.getElementById('shape').value;
-      if (shape === 'solid_round') {
-        const d = parseFloat(document.getElementById('sr_dia').value) || 0;
-        return (Math.PI * Math.pow(d, 2)) / 4;
-      } else if (shape === 'hollow_tube') {
-        const od = parseFloat(document.getElementById('ht_od').value) || 0;
-        const id = parseFloat(document.getElementById('ht_id').value) || 0;
-        return (Math.PI * (Math.pow(od, 2) - Math.pow(id, 2))) / 4;
-      } else if (shape === 'rectangular') {
-        const w = parseFloat(document.getElementById('rec_w').value) || 0;
-        const h = parseFloat(document.getElementById('rec_h').value) || 0;
-        return w * h;
-      } else if (shape === 'i_beam') {
-        return parseFloat(document.getElementById('ib_area').value) || 0;
+      const s = document.getElementById('shape').value;
+      if (s === 'solid_round') return (Math.PI * Math.pow(parseFloat(document.getElementById('sr_dia').value)||0, 2)) / 4;
+      if (s === 'hollow_tube') return (Math.PI * (Math.pow(parseFloat(document.getElementById('ht_od').value)||0, 2) - Math.pow(parseFloat(document.getElementById('ht_id').value)||0, 2))) / 4;
+      if (s === 'rectangular') return (parseFloat(document.getElementById('rec_w').value)||0) * (parseFloat(document.getElementById('rec_h').value)||0);
+      if (s === 'flat_sheet') return (parseFloat(document.getElementById('fs_w').value)||0) * (parseFloat(document.getElementById('fs_t').value)||0);
+      if (s === 'l_angle') {
+        const w = parseFloat(document.getElementById('la_w').value)||0, t = parseFloat(document.getElementById('la_t').value)||0;
+        return (2 * w * t) - (t * t);
       }
       return 0;
     }
 
     function calculate() {
-      const matKey = document.getElementById('material').value;
-      let mat = {};
-
-      if (matKey === 'custom') {
-        mat = {
-          name: document.getElementById('c_name').value || 'Custom Alloy',
-          alpha: (parseFloat(document.getElementById('c_alpha').value) || 0) * 1e-6,
-          E: parseFloat(document.getElementById('c_E').value) || 0,
-          yield: parseFloat(document.getElementById('c_yield').value) || 0
-        };
-      } else {
-        mat = materials[matKey];
-      }
-
+      const matId = document.getElementById('material').value || db[0].id;
+      const mat = db.find(m => m.id === matId) || db[0];
       const L0 = parseFloat(document.getElementById('length').value) || 0;
       const dT = parseFloat(document.getElementById('deltaT').value) || 0;
       const Area = getArea();
 
-      // Engineering Math
       const dL = L0 * mat.alpha * dT;
-      const stress = (mat.E * 1000) * mat.alpha * dT; // Stress = E * α * ΔT in MPa
-      const force_kN = (stress * Area) / 1000; // Force = Stress * Area in kN
+      const stress = (mat.E * 1000) * mat.alpha * dT;
+      const force_kN = (stress * Area) / 1000;
 
       document.getElementById('deltaL').innerText = `${dL.toFixed(3)} mm`;
       document.getElementById('stress').innerText = `${stress.toFixed(2)} MPa`;
       document.getElementById('areaOut').innerText = `${Area.toFixed(1)} mm²`;
       document.getElementById('forceOut').innerText = `${force_kN.toFixed(2)} kN`;
 
-      drawVisualization(L0, dL, dT);
+      drawVisualization(dL, stress, mat.yield);
       runAIAssessment(mat, stress, force_kN, dL, dT);
     }
 
-    function drawVisualization(L0, dL, dT) {
+    function drawVisualization(dL, stress, yieldStr) {
       const cvs = document.getElementById('canvas');
       const ctx = cvs.getContext('2d');
       cvs.width = cvs.offsetWidth;
       cvs.height = cvs.offsetHeight;
-
       ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-      // Draw Anchor Wall on Left
+      // Fixed Anchors on Both Ends
       ctx.fillStyle = '#334155';
       ctx.fillRect(10, 20, 15, cvs.height - 40);
-      for (let i = 20; i < cvs.height - 30; i += 10) {
-        ctx.strokeStyle = '#64748b';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(10, i);
-        ctx.lineTo(2, i + 8);
-        ctx.stroke();
+      ctx.fillRect(cvs.width - 25, 20, 15, cvs.height - 40);
+
+      // Calculate Bending / Buckling Offset based on Stress ratio
+      const stressRatio = Math.min(stress / yieldStr, 1.5);
+      const bendFactor = Math.pow(stressRatio, 2) * 35; // Curve depth
+
+      // Dynamic Color Shift: Blue -> Orange -> Red Glow
+      let r = 56, g = 189, b = 248;
+      if (stressRatio > 0.5 && stressRatio <= 1.0) {
+        r = 245; g = 158; b = 11; // Amber Warning
+      } else if (stressRatio > 1.0) {
+        r = 239; g = 68; b = 68; // Crimson Failure
       }
 
-      // Color Shift based on Delta T (Blue -> Orange/Red)
-      const heat = Math.min(Math.max(dT / 300, 0), 1);
-      const r = Math.floor(56 + heat * (239 - 56));
-      const g = Math.floor(189 - heat * (189 - 68));
-      const b = Math.floor(248 - heat * (248 - 68));
+      // Draw Bent Constrained Beam
+      const startX = 25, endX = cvs.width - 25, midX = (startX + endX) / 2;
+      const startY = cvs.height / 2, midY = startY + bendFactor;
 
-      // Bar Dimensions
-      const startX = 25;
-      const baseWidth = cvs.width * 0.55;
-      const visualExpansion = Math.min(dL * 20, cvs.width * 0.25); // Visual scale
-      const totalWidth = baseWidth + visualExpansion;
-      const barY = cvs.height / 2 - 20;
-
-      // Draw Beam
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
-      ctx.fillRect(startX, barY, totalWidth, 40);
-      ctx.shadowBlur = 0; // Reset shadow
-
-      // Draw Expansion Highlight Tip
-      if (visualExpansion > 1) {
-        ctx.fillStyle = '#f43f5e';
-        ctx.fillRect(startX + baseWidth, barY, visualExpansion, 40);
-      }
-
-      // CAD Dimension Line
-      const dimY = cvs.height - 20;
-      ctx.strokeStyle = '#94a3b8';
-      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(startX, dimY);
-      ctx.lineTo(startX + totalWidth, dimY);
-      ctx.moveTo(startX, dimY - 5);
-      ctx.lineTo(startX, dimY + 5);
-      ctx.moveTo(startX + totalWidth, dimY - 5);
-      ctx.lineTo(startX + totalWidth, dimY + 5);
+      ctx.moveTo(startX, startY);
+      ctx.quadraticCurveTo(midX, midY, endX, startY);
+      ctx.strokeStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.lineWidth = 14;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px sans-serif';
+      // Status Overlay Label
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 12px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(`L_total = ${(L0 + dL).toFixed(2)} mm (+${dL.toFixed(2)} mm)`, startX + totalWidth / 2, dimY - 5);
+      const statusText = stressRatio > 1.0 ? `CRITICAL BENDING / YIELD FAILURE (${(stressRatio*100).toFixed(0)}%)` : `CONSTRAINED STRESS BEAM (${(stressRatio*100).toFixed(0)}% YIELD)`;
+      ctx.fillText(statusText, cvs.width / 2, 25);
     }
 
     function runAIAssessment(mat, stress, force_kN, dL, dT) {
@@ -310,17 +252,49 @@
       const sf = (mat.yield / stress).toFixed(2);
 
       if (stress > mat.yield) {
-        el.innerHTML = `<strong style="color:#ef4444;">⚠️ Yield Failure Risk:</strong> At ΔT = ${dT}°C, constrained stress (${stress.toFixed(1)} MPa) exceeds the yield strength of ${mat.name} (${mat.yield} MPa). Material will undergo plastic deformation. Restraining force reaches <strong>${force_kN.toFixed(1)} kN</strong>. Expansion joints or slotted mounts are mandatory.`;
-      } else if (stress > mat.yield * 0.75) {
-        el.innerHTML = `<strong style="color:#f59e0b;">⚡ High Stress Caution:</strong> Thermal stress reaches ${stress.toFixed(1)} MPa (Safety Factor: ${sf}). Significant joint reaction force of <strong>${force_kN.toFixed(1)} kN</strong> generated. Recommend reviewing bolt shear limits.`;
+        el.innerHTML = `<strong style="color:#ef4444;">⚠️ AI Failure Mode Warning:</strong> Under ΔT = ${dT}°C, thermal stress (${stress.toFixed(1)} MPa) exceeds yield strength of ${mat.name} (${mat.yield} MPa). The beam will undergo thermal buckling and permanent distortion. Reaction force: <strong>${force_kN.toFixed(1)} kN</strong>. <em>Use slotted mounting holes or flexible bellows.</em>`;
       } else {
-        el.innerHTML = `<strong style="color:#10b981;">✓ Safe Operating Zone:</strong> Constrained stress (${stress.toFixed(1)} MPa) is within safe limits for ${mat.name} (Safety Factor: ${sf}). Thermal elongation of <strong>${dL.toFixed(3)} mm</strong> can be accommodated within standard engineering tolerances.`;
+        el.innerHTML = `<strong style="color:#10b981;">✓ AI Design Approval:</strong> Operating in safe elastic zone (Safety Factor: ${sf}). Thermal elongation of <strong>${dL.toFixed(3)} mm</strong> can be managed via standard axial thermal expansion joints.`;
       }
     }
 
-    // Initial setup
-    handleMaterialChange();
-    handleShapeChange();
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const matId = document.getElementById('material').value || db[0].id;
+      const mat = db.find(m => m.id === matId);
+
+      doc.setFontSize(16);
+      doc.text("Thermal Expansion & Stress Analysis Report", 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
+
+      doc.setFontSize(12);
+      doc.text("1. Input Parameters", 14, 40);
+      doc.setFontSize(10);
+      doc.text(`• Selected Material: ${mat.name}`, 16, 48);
+      doc.text(`• Length (L0): ${document.getElementById('length').value} mm`, 16, 54);
+      doc.text(`• Temperature Change (dT): ${document.getElementById('deltaT').value} °C`, 16, 60);
+
+      doc.setFontSize(12);
+      doc.text("2. Engineering Calculations", 14, 72);
+      doc.setFontSize(10);
+      doc.text(`• Elongation (dL): ${document.getElementById('deltaL').innerText}`, 16, 80);
+      doc.text(`• Thermal Stress (sigma): ${document.getElementById('stress').innerText}`, 16, 86);
+      doc.text(`• Section Area (A): ${document.getElementById('areaOut').innerText}`, 16, 92);
+      doc.text(`• Restraining Force (F): ${document.getElementById('forceOut').innerText}`, 16, 98);
+
+      // Embed Canvas Image in PDF
+      const cvs = document.getElementById('canvas');
+      const imgData = cvs.toDataURL('image/png');
+      doc.text("3. Structural Bending Canvas", 14, 110);
+      doc.addImage(imgData, 'PNG', 14, 115, 180, 50);
+
+      doc.save("Thermal_Analysis_Report.pdf");
+    }
+
+    // Initial population
+    filterMaterials();
   </script>
 </body>
 </html>
