@@ -37,9 +37,16 @@ def get_manifest():
         return FileResponse("manifest.json")
     return {"error": "manifest.json not found"}
 
+@app.get("/icon-192.png")
+def get_icon_192():
+    return FileResponse("icon-192.png", media_type="image/png")
+
+@app.get("/icon-512.png")
+def get_icon_512():
+    return FileResponse("icon-512.png", media_type="image/png")
+
 @app.post("/predict_assembly_stress")
 def predict_assembly_stress(data: AssemblyInput):
-    # Stress calculation logic
     P = (data.alpha1 * data.L1 + data.alpha2 * data.L2) * data.delta_T / ((data.L1 / (data.A1 * data.E1)) + (data.L2 / (data.A2 * data.E2)))
     sigma1 = P / data.A1
     sigma2 = P / data.A2
