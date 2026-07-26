@@ -22,7 +22,7 @@
     input, select { width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: #fff; box-sizing: border-box; font-size: 0.85rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     canvas { width: 100%; height: 180px; background: #020617; border-radius: 8px; margin-top: 8px; border: 1px solid var(--border); display: block; }
-    .ai-badge { display: inline-block; background: #2563eb; color: white; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; }
+    .eng-badge { display: inline-block; background: #2563eb; color: white; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; }
     .output-val { font-size: 1rem; font-weight: bold; color: var(--accent); margin-top: 2px; }
     .shape-inputs { display: none; margin-top: 8px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 6px; border: 1px dashed var(--border); }
     .btn-pdf { width: 100%; padding: 10px; background: #0284c7; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 10px; }
@@ -122,10 +122,10 @@
     </div>
   </div>
 
-  <!-- AI Engineering Analysis & PDF Export -->
+  <!-- Engineering Analysis & PDF Export -->
   <div class="card">
-    <span class="ai-badge">AI Safety & Design Use Case</span>
-    <div id="aiInsight" style="color: #cbd5e1; line-height: 1.4; font-size: 0.85rem;">Analyzing...</div>
+    <span class="eng-badge">Structural Safety & Design Analysis</span>
+    <div id="engInsight" style="color: #cbd5e1; line-height: 1.4; font-size: 0.85rem;">Analyzing parameters...</div>
     <button class="btn-pdf" onclick="generatePDF()">📄 Export PDF Technical Report</button>
   </div>
 
@@ -198,7 +198,7 @@
       document.getElementById('forceOut').innerText = `${force_kN.toFixed(2)} kN`;
 
       drawVisualization(dL, stress, mat.yield);
-      runAIAssessment(mat, stress, force_kN, dL, dT);
+      runEngineeringAssessment(mat, stress, force_kN, dL, dT);
     }
 
     function drawVisualization(dL, stress, yieldStr) {
@@ -247,14 +247,14 @@
       ctx.fillText(statusText, cvs.width / 2, 25);
     }
 
-    function runAIAssessment(mat, stress, force_kN, dL, dT) {
-      const el = document.getElementById('aiInsight');
+    function runEngineeringAssessment(mat, stress, force_kN, dL, dT) {
+      const el = document.getElementById('engInsight');
       const sf = (mat.yield / stress).toFixed(2);
 
       if (stress > mat.yield) {
-        el.innerHTML = `<strong style="color:#ef4444;">⚠️ AI Failure Mode Warning:</strong> Under ΔT = ${dT}°C, thermal stress (${stress.toFixed(1)} MPa) exceeds yield strength of ${mat.name} (${mat.yield} MPa). The beam will undergo thermal buckling and permanent distortion. Reaction force: <strong>${force_kN.toFixed(1)} kN</strong>. <em>Use slotted mounting holes or flexible bellows.</em>`;
+        el.innerHTML = `<strong style="color:#ef4444;">⚠️ Structural Failure Risk:</strong> Under ΔT = ${dT}°C, thermal stress (${stress.toFixed(1)} MPa) exceeds the yield strength of ${mat.name} (${mat.yield} MPa). Plastic deformation or structural buckling will occur. Reaction force: <strong>${force_kN.toFixed(1)} kN</strong>. <em>Slotted mounting holes, expansion joints, or flexible loops are required.</em>`;
       } else {
-        el.innerHTML = `<strong style="color:#10b981;">✓ AI Design Approval:</strong> Operating in safe elastic zone (Safety Factor: ${sf}). Thermal elongation of <strong>${dL.toFixed(3)} mm</strong> can be managed via standard axial thermal expansion joints.`;
+        el.innerHTML = `<strong style="color:#10b981;">✓ Optimal Design Range:</strong> Operating within safe elastic bounds (Factor of Safety: ${sf}). Thermal expansion of <strong>${dL.toFixed(3)} mm</strong> can be accommodated within standard engineering tolerances.`;
       }
     }
 
@@ -287,7 +287,7 @@
       // Embed Canvas Image in PDF
       const cvs = document.getElementById('canvas');
       const imgData = cvs.toDataURL('image/png');
-      doc.text("3. Structural Bending Canvas", 14, 110);
+      doc.text("3. Structural Bending Schematic", 14, 110);
       doc.addImage(imgData, 'PNG', 14, 115, 180, 50);
 
       doc.save("Thermal_Analysis_Report.pdf");
