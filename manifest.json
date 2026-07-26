@@ -1,16 +1,12 @@
 {
-  "short_name": "ThermalCalc",
-  "name": "Thermal Expansion Calculator",
-  "description": "Predict assembly thermal growth and stress.",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/1048/1048953.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": "/",
   "background_color": "#ffffff",
-  "theme_color": "#007bff",
-  "display": "standalone"
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Thermal Expansion Calculator",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "ThermalCalc",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "Predict assembly thermal growth and stress."
 }
