@@ -1,125 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thermal Expansion Stress Calculator</title>
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 500px; background: white; margin: 0 auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        h2 { text-align: center; color: #0d47a1; margin-top: 0; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        button { width: 100%; background: #0d47a1; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #1565c0; }
-        .results { margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: none; }
-        .metric { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
-        .metric-val { font-weight: bold; color: #1565c0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thermal Expansion Calculator</title>
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { background-color: #007bff; color: white; padding: 10px 15px; border: none; cursor: pointer; width: 100%; font-size: 16px; }
+    .result { margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; display: none; }
+  </style>
 </head>
 <body>
+  <h2>Thermal Expansion & Stress Calculator</h2>
+  <div class="form-group"><label>Length 1 (m):</label><input type="number" id="L1" step="any" value="1.0"></div>
+  <div class="form-group"><label>Area 1 (m²):</label><input type="number" id="A1" step="any" value="0.01"></div>
+  <div class="form-group"><label>Elastic Modulus 1 (Pa):</label><input type="number" id="E1" step="any" value="200e9"></div>
+  <div class="form-group"><label>Coeff. Thermal Expansion 1 (1/K):</label><input type="number" id="alpha1" step="any" value="12e-6"></div>
+  <hr>
+  <div class="form-group"><label>Length 2 (m):</label><input type="number" id="L2" step="any" value="1.0"></div>
+  <div class="form-group"><label>Area 2 (m²):</label><input type="number" id="A2" step="any" value="0.01"></div>
+  <div class="form-group"><label>Elastic Modulus 2 (Pa):</label><input type="number" id="E2" step="any" value="100e9"></div>
+  <div class="form-group"><label>Coeff. Thermal Expansion 2 (1/K):</label><input type="number" id="alpha2" step="any" value="23e-6"></div>
+  <hr>
+  <div class="form-group"><label>Temperature Change ΔT (°C or K):</label><input type="number" id="delta_T" step="any" value="50"></div>
+  
+  <button onclick="calculate()">Calculate Stress</button>
 
-<div class="container">
-    <h2>Thermal Assembly Calculator</h2>
-    
-    <div class="form-group">
-        <label>Material 1 (Preset)</label>
-        <select id="mat1">
-            <option value="steel">Structural Steel (E=200GPa, α=12e-6)</option>
-            <option value="alum">Aluminum 6061 (E=69GPa, α=23e-6)</option>
-            <option value="brass">Brass (E=105GPa, α=19e-6)</option>
-        </select>
-    </div>
+  <div class="result" id="resultsBox">
+    <h3>Results</h3>
+    <p>Internal Force: <strong id="resForce"></strong></p>
+    <p>Material 1 Stress: <strong id="resStress1"></strong></p>
+    <p>Material 2 Stress: <strong id="resStress2"></strong></p>
+  </div>
 
-    <div class="form-group">
-        <label>Material 1 Length (mm)</label>
-        <input type="number" id="L1" value="300">
-    </div>
-
-    <div class="form-group">
-        <label>Material 1 Cross-Section Area (mm²)</label>
-        <input type="number" id="A1" value="400">
-    </div>
-
-    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-
-    <div class="form-group">
-        <label>Material 2 (Preset)</label>
-        <select id="mat2">
-            <option value="alum">Aluminum 6061 (E=69GPa, α=23e-6)</option>
-            <option value="steel">Structural Steel (E=200GPa, α=12e-6)</option>
-            <option value="brass">Brass (E=105GPa, α=19e-6)</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Material 2 Length (mm)</label>
-        <input type="number" id="L2" value="200">
-    </div>
-
-    <div class="form-group">
-        <label>Material 2 Cross-Section Area (mm²)</label>
-        <input type="number" id="A2" value="600">
-    </div>
-
-    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-
-    <div class="form-group">
-        <label>Temperature Rise ΔT (°C)</label>
-        <input type="number" id="delta_T" value="50">
-    </div>
-
-    <button onclick="calculateStress()">Run Thermal Simulation</button>
-
-    <div class="results" id="resultsBox">
-        <div class="metric"><span>Internal Force:</span><span class="metric-val" id="resForce">-</span></div>
-        <div class="metric"><span>Stress (Material 1):</span><span class="metric-val" id="resStress1">-</span></div>
-        <div class="metric"><span>Stress (Material 2):</span><span class="metric-val" id="resStress2">-</span></div>
-    </div>
-</div>
-
-<script>
-const materials = {
-    steel: { E: 200e9, alpha: 12e-6 },
-    alum:  { E: 69e9,  alpha: 23e-6 },
-    brass: { E: 105e9, alpha: 19e-6 }
-};
-
-async function calculateStress() {
-    const mat1 = materials[document.getElementById('mat1').value];
-    const mat2 = materials[document.getElementById('mat2').value];
-
-    const payload = {
-        L1: parseFloat(document.getElementById('L1').value) / 1000,
-        A1: parseFloat(document.getElementById('A1').value) / 1e6,
-        E1: mat1.E,
-        alpha1: mat1.alpha,
-        L2: parseFloat(document.getElementById('L2').value) / 1000,
-        A2: parseFloat(document.getElementById('A2').value) / 1e6,
-        E2: mat2.E,
-        alpha2: mat2.alpha,
+  <script>
+    async function calculate() {
+      const payload = {
+        L1: parseFloat(document.getElementById('L1').value),
+        A1: parseFloat(document.getElementById('A1').value),
+        E1: parseFloat(document.getElementById('E1').value),
+        alpha1: parseFloat(document.getElementById('alpha1').value),
+        L2: parseFloat(document.getElementById('L2').value),
+        A2: parseFloat(document.getElementById('A2').value),
+        E2: parseFloat(document.getElementById('E2').value),
+        alpha2: parseFloat(document.getElementById('alpha2').value),
         delta_T: parseFloat(document.getElementById('delta_T').value)
-    };
+      };
 
-    try {
+      try {
         const response = await fetch('/predict_assembly_stress', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        
         const data = await response.json();
-        
         document.getElementById('resForce').innerText = data.internal_force_kN + ' kN';
         document.getElementById('resStress1').innerText = data.material_1_stress_MPa + ' MPa';
         document.getElementById('resStress2').innerText = data.material_2_stress_MPa + ' MPa';
         document.getElementById('resultsBox').style.display = 'block';
-    } catch (err) {
-        alert('Error connecting to Python backend engine.');
+      } catch (err) {
+        alert('Error connecting to backend engine.');
+      }
     }
-}
-</script>
-
+  </script>
 </body>
 </html>
