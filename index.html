@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Expansion Stress Calculator</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 500px; background: white; margin: 0 auto; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #0d47a1; margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        button { width: 100%; background: #0d47a1; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #1565c0; }
+        .results { margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; display: none; }
+        .metric { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; }
+        .metric-val { font-weight: bold; color: #1565c0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Thermal Assembly Calculator</h2>
+    
+    <div class="form-group">
+        <label>Material 1 (Preset)</label>
+        <select id="mat1">
+            <option value="steel">Structural Steel (E=200GPa, α=12e-6)</option>
+            <option value="alum">Aluminum 6061 (E=69GPa, α=23e-6)</option>
+            <option value="brass">Brass (E=105GPa, α=19e-6)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Material 1 Length (mm)</label>
+        <input type="number" id="L1" value="300">
+    </div>
+
+    <div class="form-group">
+        <label>Material 1 Cross-Section Area (mm²)</label>
+        <input type="number" id="A1" value="400">
+    </div>
+
+    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+    <div class="form-group">
+        <label>Material 2 (Preset)</label>
+        <select id="mat2">
+            <option value="alum">Aluminum 6061 (E=69GPa, α=23e-6)</option>
+            <option value="steel">Structural Steel (E=200GPa, α=12e-6)</option>
+            <option value="brass">Brass (E=105GPa, α=19e-6)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Material 2 Length (mm)</label>
+        <input type="number" id="L2" value="200">
+    </div>
+
+    <div class="form-group">
+        <label>Material 2 Cross-Section Area (mm²)</label>
+        <input type="number" id="A2" value="600">
+    </div>
+
+    <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+    <div class="form-group">
+        <label>Temperature Rise ΔT (°C)</label>
+        <input type="number" id="delta_T" value="50">
+    </div>
+
+    <button onclick="calculateStress()">Run Thermal Simulation</button>
+
+    <div class="results" id="resultsBox">
+        <div class="metric"><span>Internal Force:</span><span class="metric-val" id="resForce">-</span></div>
+        <div class="metric"><span>Stress (Material 1):</span><span class="metric-val" id="resStress1">-</span></div>
+        <div class="metric"><span>Stress (Material 2):</span><span class="metric-val" id="resStress2">-</span></div>
+    </div>
+</div>
+
+<script>
+const materials = {
+    steel: { E: 200e9, alpha: 12e-6 },
+    alum:  { E: 69e9,  alpha: 23e-6 },
+    brass: { E: 105e9, alpha: 19e-6 }
+};
+
+async function calculateStress() {
+    const mat1 = materials[document.getElementById('mat1').value];
+    const mat2 = materials[document.getElementById('mat2').value];
+
+    const payload = {
+        L1: parseFloat(document.getElementById('L1').value) / 1000,
+        A1: parseFloat(document.getElementById('A1').value) / 1e6,
+        E1: mat1.E,
+        alpha1: mat1.alpha,
+        L2: parseFloat(document.getElementById('L2').value) / 1000,
+        A2: parseFloat(document.getElementById('A2').value) / 1e6,
+        E2: mat2.E,
+        alpha2: mat2.alpha,
+        delta_T: parseFloat(document.getElementById('delta_T').value)
+    };
+
+    try {
+        const response = await fetch('/predict_assembly_stress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById('resForce').innerText = data.internal_force_kN + ' kN';
+        document.getElementById('resStress1').innerText = data.material_1_stress_MPa + ' MPa';
+        document.getElementById('resStress2').innerText = data.material_2_stress_MPa + ' MPa';
+        document.getElementById('resultsBox').style.display = 'block';
+    } catch (err) {
+        alert('Error connecting to Python backend engine.');
+    }
+}
+</script>
+
+</body>
+</html>
