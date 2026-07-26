@@ -4,68 +4,117 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thermal Expansion Calculator</title>
-  <link rel="manifest" href="/manifest.json">
   <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input { width: 100%; padding: 8px; box-sizing: border-box; }
-    button { background-color: #007bff; color: white; padding: 10px 15px; border: none; cursor: pointer; width: 100%; font-size: 16px; }
-    .result { margin-top: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; display: none; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background: #0f172a; color: #f8fafc; }
+    .card { background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    label { display: block; margin-top: 10px; font-weight: 600; color: #94a3b8; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: #fff; box-sizing: border-box; }
+    canvas { width: 100%; height: 120px; background: #0f172a; border-radius: 8px; margin-top: 15px; border: 1px solid #334155; }
+    .ai-badge { display: inline-block; background: #3b82f6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; }
+    .output-val { font-size: 1.2rem; font-weight: bold; color: #38bdf8; margin-top: 5px; }
   </style>
 </head>
 <body>
-  <h2>Thermal Expansion & Stress Calculator</h2>
-  <div class="form-group"><label>Length 1 (m):</label><input type="number" id="L1" step="any" value="1.0"></div>
-  <div class="form-group"><label>Area 1 (m²):</label><input type="number" id="A1" step="any" value="0.01"></div>
-  <div class="form-group"><label>Elastic Modulus 1 (Pa):</label><input type="number" id="E1" step="any" value="200e9"></div>
-  <div class="form-group"><label>Coeff. Thermal Expansion 1 (1/K):</label><input type="number" id="alpha1" step="any" value="12e-6"></div>
-  <hr>
-  <div class="form-group"><label>Length 2 (m):</label><input type="number" id="L2" step="any" value="1.0"></div>
-  <div class="form-group"><label>Area 2 (m²):</label><input type="number" id="A2" step="any" value="0.01"></div>
-  <div class="form-group"><label>Elastic Modulus 2 (Pa):</label><input type="number" id="E2" step="any" value="100e9"></div>
-  <div class="form-group"><label>Coeff. Thermal Expansion 2 (1/K):</label><input type="number" id="alpha2" step="any" value="23e-6"></div>
-  <hr>
-  <div class="form-group"><label>Temperature Change ΔT (°C or K):</label><input type="number" id="delta_T" step="any" value="50"></div>
-  
-  <button onclick="calculate()">Calculate Stress</button>
 
-  <div class="result" id="resultsBox">
-    <h3>Results</h3>
-    <p>Internal Force: <strong id="resForce"></strong></p>
-    <p>Material 1 Stress: <strong id="resStress1"></strong></p>
-    <p>Material 2 Stress: <strong id="resStress2"></strong></p>
+  <h2>Thermal Expansion & Stress Suite</h2>
+
+  <div class="card">
+    <label for="material">Material Preset</label>
+    <select id="material" onchange="calculate()">
+      <option value="steel_a36">Structural Steel (A36) - α: 12.0×10⁻⁶ /°C, Yield: 250 MPa</option>
+      <option value="ss_316">Stainless Steel 316L - α: 16.0×10⁻⁶ /°C, Yield: 290 MPa</option>
+      <option value="alu_6061">Aluminum 6061-T6 - α: 23.0×10⁻⁶ /°C, Yield: 276 MPa</option>
+      <option value="inconel_718">Inconel 718 - α: 13.0×10⁻⁶ /°C, Yield: 1100 MPa</option>
+    </select>
+
+    <label for="length">Initial Length L₀ (mm)</label>
+    <input type="number" id="length" value="1000" oninput="calculate()">
+
+    <label for="deltaT">Temperature Change ΔT (°C)</label>
+    <input type="number" id="deltaT" value="100" oninput="calculate()">
+  </div>
+
+  <div class="card">
+    <h3>Visual Expansion Scale</h3>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Engineering Output</h3>
+    <div>Elongation (ΔL): <span id="deltaL" class="output-val">0.00 mm</span></div>
+    <div>Constrained Thermal Stress (σ): <span id="stress" class="output-val">0.00 MPa</span></div>
+  </div>
+
+  <div class="card">
+    <span class="ai-badge">AI Material Assessment</span>
+    <div id="aiInsight" style="color: #cbd5e1; line-height: 1.5;">Analyzing parameter safety limits...</div>
   </div>
 
   <script>
-    async function calculate() {
-      const payload = {
-        L1: parseFloat(document.getElementById('L1').value),
-        A1: parseFloat(document.getElementById('A1').value),
-        E1: parseFloat(document.getElementById('E1').value),
-        alpha1: parseFloat(document.getElementById('alpha1').value),
-        L2: parseFloat(document.getElementById('L2').value),
-        A2: parseFloat(document.getElementById('A2').value),
-        E2: parseFloat(document.getElementById('E2').value),
-        alpha2: parseFloat(document.getElementById('alpha2').value),
-        delta_T: parseFloat(document.getElementById('delta_T').value)
-      };
+    const materials = {
+      steel_a36: { name: 'A36 Steel', alpha: 12.0e-6, E: 200, yield: 250 },
+      ss_316: { name: '316L Stainless', alpha: 16.0e-6, E: 193, yield: 290 },
+      alu_6061: { name: '6061-T6 Aluminum', alpha: 23.0e-6, E: 68.9, yield: 276 },
+      inconel_718: { name: 'Inconel 718', alpha: 13.0e-6, E: 200, yield: 1100 }
+    };
 
-      try {
-        const response = await fetch('/predict_assembly_stress', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-        document.getElementById('resForce').innerText = data.internal_force_kN + ' kN';
-        document.getElementById('resStress1').innerText = data.material_1_stress_MPa + ' MPa';
-        document.getElementById('resStress2').innerText = data.material_2_stress_MPa + ' MPa';
-        document.getElementById('resultsBox').style.display = 'block';
-      } catch (err) {
-        alert('Error connecting to backend engine.');
+    function calculate() {
+      const matKey = document.getElementById('material').value;
+      const L0 = parseFloat(document.getElementById('length').value) || 0;
+      const dT = parseFloat(document.getElementById('deltaT').value) || 0;
+      const mat = materials[matKey];
+
+      // Calculations
+      const dL = L0 * mat.alpha * dT;
+      const stress = (mat.E * 1000) * mat.alpha * dT;
+
+      document.getElementById('deltaL').innerText = `${dL.toFixed(3)} mm`;
+      document.getElementById('stress').innerText = `${stress.toFixed(2)} MPa`;
+
+      drawVisualization(dT, dL);
+      runAIAssessment(mat, stress, dT);
+    }
+
+    function drawVisualization(dT, dL) {
+      const cvs = document.getElementById('canvas');
+      const ctx = cvs.getContext('2d');
+      cvs.width = cvs.offsetWidth;
+      cvs.height = cvs.offsetHeight;
+
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      // Interpolate color based on temperature (Blue -> Red)
+      const heatFactor = Math.min(Math.max(dT / 300, 0), 1);
+      const r = Math.floor(59 + heatFactor * (239 - 59));
+      const g = Math.floor(130 - heatFactor * (130 - 68));
+      const b = Math.floor(246 - heatFactor * (246 - 68));
+
+      // Draw expanding bar
+      const baseWidth = cvs.width * 0.5;
+      const expandedWidth = baseWidth + Math.min(dL * 15, cvs.width * 0.4); // Visual scale
+      
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillRect(20, cvs.height / 2 - 15, expandedWidth, 30);
+    }
+
+    function runAIAssessment(mat, stress, dT) {
+      const el = document.getElementById('aiInsight');
+      const safetyFactor = (mat.yield / stress).toFixed(2);
+
+      if (stress > mat.yield) {
+        el.innerHTML = `<strong style="color:#ef4444;">⚠️ Yield Risk Warning:</strong> At ΔT = ${dT}°C, constrained thermal stress (${stress.toFixed(1)} MPa) exceeds yield strength (${mat.yield} MPa). Plastic deformation or structural failure will occur without expansion joints.`;
+      } else if (stress > mat.yield * 0.75) {
+        el.innerHTML = `<strong style="color:#f59e0b;">⚡ High Stress Caution:</strong> Thermal stress reaches ${stress.toFixed(1)} MPa (Safety Factor: ${safetyFactor}). Monitor fatigue limits or evaluate slotted mounting holes.`;
+      } else {
+        el.innerHTML = `<strong style="color:#10b981;">✓ Optimal Range:</strong> Operating comfortably below yield limits (Safety Factor: ${safetyFactor}). Thermal growth of ${document.getElementById('deltaL').innerText} should be accommodated in tolerance stackup.`;
       }
     }
+
+    // Initial run
+    calculate();
   </script>
 </body>
 </html>
+
